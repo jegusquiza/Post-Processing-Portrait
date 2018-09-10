@@ -1,1 +1,490 @@
+<!DOCTYPE html>
+<html>
+
+<title>
+  Post-Processing Portrait
+</title>
+
+<head>
+
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <style>
+
+     Body{
+       margin: 0px;
+       overflow: hidden;
+       background-color: '000000';
+     }
+
+     div {
+				position: absolute;
+				z-index: 10;
+				color: #fff;
+				font-family: monospace;
+				text-align: right;
+        margin-top: 50px;
+				margin-left: -100px;
+				width: 100%;
+			}
+
+      .about{
+        position: absolute;
+        font-family: monospace;
+        color: #fff;
+        text-align: left;
+        margin-left: 100px;
+        font-size:15px;
+      }
+
+
+    </style>
+
+</head>
+<body>
+
+<div class="about">
+  Combine different effects.
+</div>
+
+
+  <div >
+  <label for="dotScreen">Effect 1:</label><input id="post_1" type="checkbox" onchange="myFunction()" position="absolute"/><br />
+  <label for="dotScreen">Effect 2:</label><input id="post_2" type="checkbox" onchange="myFunction2()" position="absolute"/><br />
+  <label for="dotScreen">Effect 3:</label><input id="post_3" type="checkbox" onchange="myFunction3()" position="absolute"/><br />
+  <label for="dotScreen">Effect 4:</label><input id="post_4" type="checkbox" onchange="myFunction4()" position="absolute"/><br />
+
+
+  </div>
+
+
+      <script src="https://threejs.org/build/three.js"></script>
+      <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/127738/OBJLoader.js'></script>
+      <script src="js/BleachBypassShader.js"></script>
+      <script src="js/OrbitControls.js"></script>
+      <script src="js/AfterimageShader.js"></script>
+      <script src="js/BokehShader.js"></script>
+      <script src="js/ShaderGodRays.js"></script>
+      <script src="js/SobelOperatorShader.js"></script>
+		  <script src="js/ColorifyShader.js"></script>
+		  <script src="js/ConvolutionShader.js"></script>
+		  <script src="js/CopyShader.js"></script>
+		  <script src="js/DotScreenShader.js"></script>
+	    <script src="js/FilmShader.js"></script>
+		  <script src="js/HorizontalBlurShader.js"></script>
+		  <script src="js/SepiaShader.js"></script>
+		  <script src="js/VerticalBlurShader.js"></script>
+	    <script src="js/VignetteShader.js"></script>
+      <script src="js/FXAAShader.js"></script>
+		  <script src="js/EffectComposer.js"></script>
+		  <script src="js/RenderPass.js"></script>
+		  <script src="js/BloomPass.js"></script>
+		  <script src="js/FilmPass.js"></script>
+		  <script src="js/DotScreenPass.js"></script>
+		  <script src="js/TexturePass.js"></script>
+		  <script src="js/ShaderPass.js"></script>
+		  <script src="js/MaskPass.js"></script>
+      <script src="js/RGBShiftShader.js"></script>
+      <script src="js/DigitalGlitch.js"></script>
+      <script src="js/GlitchPass.js"></script>
+      <script src="js/stats.min.js"></script>
+      <script src="js/dat.gui.min.js"></script>
+      <script src="js/HorizontalBlurShader.js"></script>
+      <script src="js/VerticalBlurShader.js"></script>
+      <script src="js/LuminosityHighPassShader.js"></script>
+      <script src="js/UnrealBloomPass.js"></script>
+      <script src="js/AfterimagePass.js"></script>
+
+      <script>
+
+        var camera;
+        var scene;
+        var renderer;
+        var head;
+        var scaleFace = 3;
+        var r = 0.0;
+        var composer;
+
+
+
+        var effect1;
+        var effect2;
+        var effect3;
+        var effect4;
+        var effect5;
+        var effect6;
+        var effect7;
+        var effect8;
+        var effect9;
+        var effect10;
+        var effect11;
+        var effect12;
+        var effect13;
+        var effect14;
+        var effect15;
+
+        var mx = -5;
+
+        var delta = 0;
+        var pointLight;
+
+
+
+        function init(){
+
+          renderer = new THREE.WebGLRenderer();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          document.body.appendChild( renderer.domElement );
+
+          scene = new THREE.Scene();
+          // scene.background = new THREE.Color( 0xefd1b5 );
+          scene.background = new THREE.Color( '000000', 0.3 );
+          camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 2000);
+          // camera.position.set(10,-400,140);
+          camera.position.set(0,-400,160);
+          scene.add(camera);
+
+          var light = new THREE.DirectionalLight( 0xffffff );
+          light.position.set( 0, 1, 1 ).normalize();
+          scene.add(light);
+
+          pointLight = new THREE.PointLight( 0xff0000, 2 );
+				  pointLight.position.z = 2500;
+				  // scene.add( pointLight );
+
+        pointLight2 = new THREE.PointLight( 008000, 10 );
+        pointLight2.position.z = -1000;
+        scene.add( pointLight2 );
+
+        //Load the obj file
+        loadOBJ();
+
+
+        //Composer//
+        composer = new THREE.EffectComposer( renderer );
+
+        var renderPass = new THREE.RenderPass(scene, camera );
+        composer.addPass(renderPass);
+        // renderPass.renderToScreen = true;
+
+        effect5 = new THREE.ShaderPass(THREE.SepiaShader);
+        composer.addPass(effect5);
+        // effect5.renderToScreen = true;
+
+        effect10 = new THREE.ShaderPass(THREE.RGBShiftShader);
+        effect10.uniforms[ 'amount'].value = 0.3;
+        // composer.addPass(effect10);
+
+
+        effect6 = new THREE.GlitchPass(1);
+        composer.addPass(effect6);
+
+        effect8 = new THREE.UnrealBloomPass({
+
+        });
+
+        //custom shader pass////
+        var myEffect = {
+          uniforms: {
+            "tDiffuse": { value: null},
+            "amount": { value: 0.0},
+
+          },
+          vertexShader:[
+            "varying vec2 vUv;",
+
+            "void main() {",
+
+              "vUv = uv;",
+              "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+            "}"
+          ].join( "\n" ),
+          fragmentShader:[
+            "uniform float amount;",
+            "uniform sampler2D tDiffuse;",
+
+
+            "varying vec2 vUv;",
+            "void main() {",
+              "vec4 color = texture2D( tDiffuse, vUv );",
+              "vec3 c = color.rgb;",
+              "color.r = c.r * 10.0;",
+              "color.g = c.g * amount;",
+              "color.b = c.b;",
+              "gl_FragColor = vec4( color.rgb, color.a );",
+              "}"
+            ].join( "\n" )
+        }
+
+        effect7 = new THREE.ShaderPass(myEffect);
+
+
+
+        effect4 = new THREE.DotScreenPass( new THREE.Vector3(0,0,0), 200, 80);
+        composer.addPass(effect4);
+
+        effect9 = new THREE.FilmPass(0.8, 0.325, 256, true);
+        // composer.addPass(effect9);
+        // effect9.renderToScreen = true;
+
+        effect12 = new THREE.ShaderPass(THREE.RGBShiftShader);
+        // pass6.uniforms[ 'amount'].value = 0.0015;
+        effect12.uniforms[ 'amount'].value = 0.03;
+        composer.addPass(effect12);
+
+
+        effect11 = new THREE.GlitchPass(2);
+        composer.addPass(effect11);
+        // effect11.renderToScreen = true;
+
+        effect3 = new THREE.ShaderPass( THREE.FXAAShader );
+        effect3.uniforms[ 'resolution' ].value.set( 2 / window.innerWidth, 1 / window.innerHeight );
+        // composer.addPass( effect3 );
+        // effect3.renderToScreen = true;
+
+        effect15 = new THREE.AfterimagePass(0.6);
+        composer.addPass( effect15 );
+        // effect15.renderToScreen = true;
+
+        effect1 = new THREE.ShaderPass(THREE.RGBShiftShader);
+        // pass6.uniforms[ 'amount'].value = 0.0015;
+        effect1.uniforms[ 'amount'].value = 0.5;
+        // composer.addPass(pass18);
+
+        effect2 = new THREE.ShaderPass(THREE.VerticalBlurShader);
+        effect2.uniforms.value = 1.0 / 512.0;
+        effect2.renderToScreen = true;
+        // composer.addPass(effect2);
+
+        effect14 = new THREE.ShaderPass(THREE.RGBShiftShader);
+        effect14.uniforms[ 'amount'].value = 0.8;
+        // composer.addPass(effect14);
+
+
+        effect13 = new THREE.ShaderPass(THREE.RGBShiftShader);
+        // pass6.uniforms[ 'amount'].value = 0.0015;
+        effect13.uniforms[ 'amount'].value = -0.005;
+        composer.addPass(effect13);
+        effect13.renderToScreen = true;
+
+
+
+        }
+
+
+        var textureLoader = new THREE.TextureLoader();
+				var normalMap = textureLoader.load( "models/fausto.jpg" );
+				var aoMap = textureLoader.load( "models/jota.jpg" );
+				var displacementMap = textureLoader.load( "models/jota.jpg" );
+
+        var loadOBJ = function(){
+
+          //Manager from ThreeJs to track a loader in its status
+          var manager = new THREE.LoadingManager();
+          //Loader for Obj from Three.js
+          var loader = new THREE.OBJLoader( manager );
+
+          loader.load( 'models/head2.obj', addHeadInScene);
+        };
+
+        var addHeadInScene = function(object){
+          head = object;
+
+        head.rotation.x = 0;
+        head.position.y = -400;
+        head.position.z = 100;
+
+          //Go through all children of the loaded object and search for a Mesh
+        object.traverse( function ( child ) {
+          //This allow us to check if the children is an instance of the Mesh constructor
+          if(child instanceof THREE.Mesh){
+
+          child.material = new THREE.MeshStandardMaterial( {
+          color: 'ffffff',
+					normalMap: normalMap,
+					normalScale: new THREE.Vector2( 2, - 2 ),
+					aoMap: aoMap,
+					aoMapIntensity: 10,
+					displacementMap: displacementMap,
+					displacementScale: scaleFace,
+					side: THREE.DoubleSide,
+          emissive: 'ffffff',
+          emissiveIntensity: "2.5",
+          wireframe: true,
+          wireframeLinecap : "butt",
+          wireframeLinewidth: "5"
+				    } );
+
+          //Sometimes there are some vertex normals missing in the .obj files, ThreeJs will compute them
+          child.geometry.computeVertexNormals();
+            }
+          });
+
+          //Add the 3D object in the scene
+          scene.add(head);
+          render();
+            };
+
+          function myFunction() {
+
+          var wildGlitch = document.getElementById('post_1');
+
+          if (wildGlitch.checked == true){
+            setTimeout(function(){
+               // pass10.renderToScreen = false;
+
+               composer.addPass(effect8); effect8.renderToScreen = true;
+               camera.position.set(0,-400,160);
+
+
+             } , 1000);
+          } else {
+
+              setTimeout(function(){
+                 // pass10.renderToScreen = false;
+                 composer.addPass(effect8); effect8.renderToScreen = false;
+                 camera.position.set(0,-400,160);
+
+               } , 1000);
+
+          }
+
+          };
+
+          function myFunction2(){
+
+            var wildGlitch2 = document.getElementById('post_2');
+
+
+          if (wildGlitch2.checked ==true){
+            setTimeout(function(){
+
+              composer.addPass(effect7);
+              effect7.renderToScreen = true;
+              composer.addPass( effect3 );
+              effect3.renderToScreen = true;
+              camera.position.set(0,-400,160);
+
+
+              } , 1000);
+
+          } else {
+
+
+              setTimeout(function(){
+
+              composer.addPass(effect7);
+              effect7.renderToScreen = false;
+
+              composer.addPass( effect3 );
+              effect3.renderToScreen = false;
+              camera.position.set(0,-400,160);
+
+
+               } , 1000);
+
+
+         }
+       }
+
+
+
+          function myFunction3(){
+
+            var wildGlitch3 = document.getElementById('post_3');
+
+
+          if (wildGlitch3.checked ==true){
+            setTimeout(function(){
+
+              composer.addPass(effect1);
+              effect1.renderToScreen = true;
+              camera.position.set(0,-400,160);
+
+
+              } , 1000);
+
+          } else {
+
+
+              setTimeout(function(){
+
+                composer.addPass(effect1);
+                effect1.renderToScreen = false;
+                camera.position.set(0,-400,160);
+
+
+               } , 1000);
+
+
+         }
+       }
+
+       function myFunction4(){
+
+         var wildGlitch4 = document.getElementById('post_4');
+
+
+       if (wildGlitch4.checked ==true){
+         setTimeout(function(){
+
+           composer.addPass(effect14);
+           effect14.renderToScreen = true;
+           camera.position.set(0,-400,160);
+
+
+           } , 1000);
+
+       } else {
+
+
+           setTimeout(function(){
+
+            composer.addPass(effect14);
+            effect14.renderToScreen = false;
+            camera.position.set(0,-400,160);
+
+
+            } , 1000);
+
+
+      }
+    }
+
+
+          var render = function () {
+
+          for ( var i = 0; i < 100; i++){
+
+            delta += 0.000000005 * (i * 1000);
+            effect7.uniforms.amount.value = (Math.sin(delta) / Math.cos(delta)) * 5;
+
+          };
+
+          if ( delta > 50000){
+            delta = 0.000000005;
+          };
+
+          console.log(delta);
+
+
+          requestAnimationFrame(render);
+
+          // Turn the head
+          head.rotation.y += .005;
+          head.rotation.z += .005;
+          head.rotation.x -= .005;
+
+          // renderer.render(scene, camera);
+          composer.render();
+          };
+          init();
+          //animate();
+
+          </script>
+
+          </body>
+
+          </html>
 
